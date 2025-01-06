@@ -1,18 +1,38 @@
 package main
 
 import (
+	"archive/zip"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
+	"strconv"
+	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 const (
-	uploadPath = "./uploads"
-	maxUploadSize = 10 << 20 // 10 MB
+	uploadPath    = "./uploads"
+	maxUploadSize = 100 << 20 // 100 MB
+	defaultPort   = "10000"
 )
+
+// Manga struct to hold manga data in memory
+type Manga struct {
+	Title    string
+	Chapters []Chapter
+}
+
+type Chapter struct {
+	Number string
+	Pages  []string
+}
+
+var mangaList []Manga
 
 func main() {
 	// Create the uploads directory if it doesn't exist
@@ -20,13 +40,23 @@ func main() {
 		os.MkdirAll(uploadPath, 0755)
 	}
 
-	http.HandleFunc("/upload", uploadHandler)
+	r := mux.NewRouter()
 
-	// Serve static files (for the frontend)
-	http.Handle("/", http.FileServer(http.Dir("./static")))
+	r.HandleFunc("/upload", uploadHandler).Methods("POST")
+	r.HandleFunc("/manga", getMangaList).Methods("GET")
+	r.HandleFunc("/manga/{title}", getMangaChapters).Methods("GET")
+	r.HandleFunc("/manga/{title}/{chapter}/{page}", getMangaPage).Methods("GET")
 
-	fmt.Println("Server started on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// Serve static files
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = defaultPort
+	}
+
+	fmt.Printf("Server started on http://0.0.0.0:%s\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,5 +106,162 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "File uploaded successfully: %s\n", handler.Filename)
+	// Unzip the uploaded file
+	if err := unzip(filePath, filepath.Join(uploadPath, mangaTitle, chapterNumber)); err != nil {
+		http.Error(w, "Error unzipping file", http.StatusInternalServerError)
+		return
+	}
+
+	// Update mangaList
+	updateMangaList(mangaTitle, chapterNumber, dirPath)
+
+	fmt.Fprintf(w, "File uploaded and unzipped successfully: %s\n", handler.Filename)
+}
+
+func unzip(src, dest string) error {
+	r, err := zip.OpenReader(src)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+
+	for _, f := range r.File {
+		rc, err := f.Open()
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		fpath := filepath.Join(dest, f.Name)
+		if f.FileInfo().IsDir() {
+			os.MkdirAll(fpath, f.Mode())
+		} else {
+			var fdir string
+			if lastIndex := strings.LastIndex(fpath, string(os.PathSeparator)); lastIndex > -1 {
+				fdir = fpath[:lastIndex]
+			}
+
+			err = os.MkdirAll(fdir, f.Mode())
+			if err != nil {
+				log.Fatal(err)
+				return err
+			}
+			f, err := os.OpenFile(
+				fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+
+			_, err = io.Copy(f, rc)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func updateMangaList(mangaTitle, chapterNumber, dirPath string) {
+	// Check if manga exists
+	mangaIndex := -1
+	for i, m := range mangaList {
+		if m.Title == mangaTitle {
+			mangaIndex = i
+			break
+		}
+	}
+
+	// If manga doesn't exist, add it
+	if mangaIndex == -1 {
+		mangaList = append(mangaList, Manga{Title: mangaTitle})
+		mangaIndex = len(mangaList) - 1
+	}
+
+	// Get the list of pages
+	var pages []string
+	files, err := os.ReadDir(dirPath)
+	if err != nil {
+		log.Printf("Error reading directory: %v", err)
+		return
+	}
+
+	for _, file := range files {
+		if !file.IsDir() {
+			pages = append(pages, file.Name())
+		}
+	}
+
+	// Sort pages
+	sort.Strings(pages)
+
+	// Add chapter to manga
+	chapter := Chapter{Number: chapterNumber, Pages: pages}
+	mangaList[mangaIndex].Chapters = append(mangaList[mangaIndex].Chapters, chapter)
+}
+
+func getMangaList(w http.ResponseWriter, r *http.Request) {
+	// Return a list of manga titles
+	var titles []string
+	for _, m := range mangaList {
+		titles = append(titles, m.Title)
+	}
+
+	// Convert titles to JSON and write the response
+	// (You'll need to add error handling and JSON encoding)
+}
+
+func getMangaChapters(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	mangaTitle := vars["title"]
+
+	// Find the manga
+	var chapters []Chapter
+	for _, m := range mangaList {
+		if m.Title == mangaTitle {
+			chapters = m.Chapters
+			break
+		}
+	}
+
+	// Return the list of chapters for the manga
+	// (Convert chapters to JSON and write the response)
+}
+
+func getMangaPage(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	mangaTitle := vars["title"]
+	chapterNumber := vars["chapter"]
+	pageNumber := vars["page"]
+
+	// Validate page number
+	pageNumberInt, err := strconv.Atoi(pageNumber)
+	if err != nil {
+		http.Error(w, "Invalid page number", http.StatusBadRequest)
+		return
+	}
+
+	// Find the manga
+	for _, m := range mangaList {
+		if m.Title == mangaTitle {
+			for _, c := range m.Chapters {
+				if c.Number == chapterNumber {
+					// Validate page number
+					if pageNumberInt < 0 || pageNumberInt >= len(c.Pages) {
+						http.Error(w, "Page number out of range", http.StatusBadRequest)
+						return
+					}
+
+					page := c.Pages[pageNumberInt]
+					filePath := filepath.Join(uploadPath, mangaTitle, chapterNumber, page)
+
+					// Serve the file
+					http.ServeFile(w, r, filePath)
+					return
+				}
+			}
+		}
+	}
+
+	http.NotFound(w, r) // Manga, chapter, or page not found
 }
