@@ -11,8 +11,32 @@
     </div>
 
     <div class="main-content">
-        <div id="manga-viewer">
+        <div class="nav-buttons">
+            <button id="view-button">View</button>
+            <button id="upload-button">Upload</button>
+        </div>
+        <div id="manga-viewer" style="display: block;">
             <!-- Manga content will be dynamically loaded here -->
+        </div>
+        <div class="manga-controls" style="display: block;">
+            <button id="prev-page">Previous</button>
+            <button id="next-page">Next</button>
+        </div>
+        <div id="upload-form" style="display: none;">
+            <h3>Upload Manga</h3>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <label for="manga">Manga Title:</label><br>
+                <input type="text" id="manga" name="manga" required><br><br>
+
+                <label for="chapter">Chapter Number:</label><br>
+                <input type="text" id="chapter" name="chapter" required><br><br>
+
+                <label for="file">Choose a chapter file (zip):</label><br>
+                <input type="file" id="file" name="file" accept=".zip" required><br><br>
+
+                <button type="submit">Upload</button>
+            </form>
+            <div id="upload-status"></div>
         </div>
     </div>
 
