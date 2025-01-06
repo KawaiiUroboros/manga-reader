@@ -46,10 +46,11 @@ func main() {
 	r.HandleFunc("/upload", uploadHandler).Methods("POST")
 	r.HandleFunc("/manga", getMangaList).Methods("GET")
 	r.HandleFunc("/manga/{title}", getMangaChapters).Methods("GET")
+	r.HandleFunc("/manga/{title}/{chapter}", getChapterPages).Methods("GET")
 	r.HandleFunc("/manga/{title}/{chapter}/{page}", getMangaPage).Methods("GET")
 
-	// Serve static files
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
+	// Serve static files from the "static" directory
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -239,6 +240,47 @@ func getMangaChapters(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(chapterNumbers); err != nil {
 		http.Error(w, "Error encoding chapters to JSON", http.StatusInternalServerError)
+		return
+	}
+}
+
+func getChapterPages(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	mangaTitle := vars["title"]
+	chapterNumber := vars["chapter"]
+
+	// Find the manga
+	var foundManga *Manga
+	for i := range mangaList {
+		if mangaList[i].Title == mangaTitle {
+			foundManga = &mangaList[i]
+			break
+		}
+	}
+
+	if foundManga == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Find the chapter
+	var foundChapter *Chapter
+	for i := range foundManga.Chapters {
+		if foundManga.Chapters[i].Number == chapterNumber {
+			foundChapter = &foundManga.Chapters[i]
+			break
+		}
+	}
+
+	if foundChapter == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Respond with JSON
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(foundChapter.Pages); err != nil {
+		http.Error(w, "Error encoding pages to JSON", http.StatusInternalServerError)
 		return
 	}
 }

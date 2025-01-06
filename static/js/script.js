@@ -9,10 +9,10 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
     })
     .then(response => response.text())
     .then(data => {
-        document.getElementById('status').textContent = data;
+        document.getElementById('upload-status').textContent = data;
     })
     .catch(error => {
-        document.getElementById('status').textContent = 'An error occurred: ' + error;
+        document.getElementById('upload-status').textContent = 'An error occurred: ' + error;
     });
 });
 
@@ -70,3 +70,16 @@ function loadMangaPage(mangaTitle, chapterNumber, pageNumber) {
             mangaViewer.appendChild(nextButton);
         });
 }
+
+// Add event listeners to buttons
+document.getElementById('view-button').addEventListener('click', () => {
+    document.getElementById('manga-viewer').style.display = 'block';
+    document.getElementById('manga-controls').style.display = 'block';
+    document.getElementById('upload-form').style.display = 'none';
+});
+
+document.getElementById('upload-button').addEventListener('click', () => {
+    document.getElementById('manga-viewer').style.display = 'none';
+    document.getElementById('manga-controls').style.display = 'none';
+    document.getElementById('upload-form').style.display = 'block';
+});
