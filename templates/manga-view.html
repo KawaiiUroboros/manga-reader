@@ -5,10 +5,16 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <h1>Manga Reader</h1>
-    <div id="manga-container">
-        <!-- Manga content will be dynamically loaded here -->
+    <h1>{{.MangaTitle}}</h1>
+    <h2>Chapter {{.ChapterNumber}}</h2>
+
+    <div id="manga-viewer">
+        <img src="/manga/{{.MangaTitle}}/{{.ChapterNumber}}/{{.PageNumber}}">
     </div>
+
+    <button onclick="loadPage('prev')">Previous</button>
+    <button onclick="loadPage('next')">Next</button>
+
     <script src="/static/js/script.js"></script>
 </body>
 </html>
