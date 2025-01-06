@@ -24,49 +24,79 @@ fetch('/manga')
         mangaList.forEach(manga => {
             const li = document.createElement('li');
             li.textContent = manga;
-            li.addEventListener('click', () => loadMangaChapters(manga));
+            li.addEventListener('click', () => {
+                currentManga = manga; // Set current manga
+                currentPage = 0; // Reset page number
+                loadMangaChapters(manga);
+            });
             mangaListElement.appendChild(li);
         });
+    })
+    .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error);
+        const mangaListElement = document.getElementById('manga-list');
+        mangaListElement.innerHTML = '<li>Error loading manga list</li>';
     });
 
 function loadMangaChapters(mangaTitle) {
-    // Fetch chapters for the selected manga
     fetch(`/manga/${mangaTitle}`)
         .then(response => response.json())
         .then(chapters => {
-            const mangaViewer = document.getElementById('manga-viewer');
-            mangaViewer.innerHTML = ''; // Clear previous content
-
+            const chapterListElement = document.getElementById('chapter-list');
+            chapterListElement.innerHTML = ''; // Clear previous chapters
             chapters.forEach(chapter => {
-                const chapterDiv = document.createElement('div');
-                chapterDiv.textContent = `Chapter ${chapter.Number}`;
-                chapterDiv.addEventListener('click', () => loadMangaPage(mangaTitle, chapter.Number, 0));
-                mangaViewer.appendChild(chapterDiv);
+                const li = document.createElement('li');
+                li.textContent = `Chapter ${chapter}`;
+                li.addEventListener('click', () => {
+                    currentChapter = chapter; // Set current chapter
+                    currentPage = 0;
+                    loadMangaPages(mangaTitle, chapter);
+                });
+                chapterListElement.appendChild(li);
             });
-        });
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function loadMangaPages(mangaTitle, chapterNumber) {
+    // Fetch the list of pages for the selected chapter
+    fetch(`/manga/${mangaTitle}/${chapterNumber}`)
+        .then(response => response.json())
+        .then(pages => {
+            totalPages = pages.length;
+            if (totalPages > 0) {
+                loadMangaPage(mangaTitle, chapterNumber, 0); // Load the first page
+            }
+        })
+        .catch(error => console.error('Error:', error));
 }
 
 function loadMangaPage(mangaTitle, chapterNumber, pageNumber) {
-    // Fetch the image for the requested page
     fetch(`/manga/${mangaTitle}/${chapterNumber}/${pageNumber}`)
         .then(response => response.blob())
-        .then(imageBlob => {
+        .then(blob => {
+            const imageUrl = URL.createObjectURL(blob);
+            const imgElement = document.createElement('img');
+            imgElement.src = imageUrl;
+            imgElement.alt = `Page ${pageNumber + 1}`;
+
             const mangaViewer = document.getElementById('manga-viewer');
-            mangaViewer.innerHTML = ''; // Clear previous content
-
-            const img = document.createElement('img');
-            img.src = URL.createObjectURL(imageBlob);
-            mangaViewer.appendChild(img);
-
-            // Add navigation buttons
-            const prevButton = document.createElement('button');
-            prevButton.textContent = 'Previous';
-            prevButton.addEventListener('click', () => loadMangaPage(mangaTitle, chapterNumber, pageNumber - 1));
-            mangaViewer.appendChild(prevButton);
-
-            const nextButton = document.createElement('button');
-            nextButton.textContent = 'Next';
-            nextButton.addEventListener('click', () => loadMangaPage(mangaTitle, chapterNumber, pageNumber + 1));
-            mangaViewer.appendChild(nextButton);
-        });
+            mangaViewer.innerHTML = '';
+            mangaViewer.appendChild(imgElement);
+        })
+        .catch(error => console.error('Error:', error));
 }
+
+document.getElementById('prev-page').addEventListener('click', () => {
+    if (currentPage > 0) {
+        currentPage--;
+        loadMangaPage(currentManga, currentChapter, currentPage);
+    }
+});
+
+document.getElementById('next-page').addEventListener('click', () => {
+    if (currentPage < totalPages - 1) {
+        currentPage++;
+        loadMangaPage(currentManga, currentChapter, currentPage);
+    }
+});
