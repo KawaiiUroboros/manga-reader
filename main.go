@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -201,14 +202,13 @@ func updateMangaList(mangaTitle, chapterNumber, dirPath string) {
 }
 
 func getMangaList(w http.ResponseWriter, r *http.Request) {
-	// Return a list of manga titles
 	var titles []string
 	for _, m := range mangaList {
 		titles = append(titles, m.Title)
 	}
 
-	// Convert titles to JSON and write the response
-	// (You'll need to add error handling and JSON encoding)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(titles)
 }
 
 func getMangaChapters(w http.ResponseWriter, r *http.Request) {
@@ -216,16 +216,31 @@ func getMangaChapters(w http.ResponseWriter, r *http.Request) {
 	mangaTitle := vars["title"]
 
 	// Find the manga
-	var chapters []Chapter
-	for _, m := range mangaList {
-		if m.Title == mangaTitle {
-			chapters = m.Chapters
+	var foundManga *Manga
+	for i := range mangaList {
+		if mangaList[i].Title == mangaTitle {
+			foundManga = &mangaList[i]
 			break
 		}
 	}
 
-	// Return the list of chapters for the manga
-	// (Convert chapters to JSON and write the response)
+	if foundManga == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Extract chapter numbers
+	var chapterNumbers []string
+	for _, c := range foundManga.Chapters {
+		chapterNumbers = append(chapterNumbers, c.Number)
+	}
+
+	// Respond with JSON
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(chapterNumbers); err != nil {
+		http.Error(w, "Error encoding chapters to JSON", http.StatusInternalServerError)
+		return
+	}
 }
 
 func getMangaPage(w http.ResponseWriter, r *http.Request) {
