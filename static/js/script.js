@@ -100,3 +100,36 @@ document.getElementById('next-page').addEventListener('click', () => {
         loadMangaPage(currentManga, currentChapter, currentPage);
     }
 });
+
+// Add event listeners to buttons
+document.getElementById('view-button').addEventListener('click', () => {
+    document.getElementById('manga-viewer').style.display = 'block';
+    document.getElementById('manga-controls').style.display = 'block';
+    document.getElementById('upload-form').style.display = 'none';
+});
+
+document.getElementById('upload-button').addEventListener('click', () => {
+    document.getElementById('manga-viewer').style.display = 'none';
+    document.getElementById('manga-controls').style.display = 'none';
+    document.getElementById('upload-form').style.display = 'block';
+});
+
+// Add event listener for form submission
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('upload-status').textContent = data;
+        // Optionally refresh the manga list here
+    })
+    .catch(error => {
+        document.getElementById('upload-status').textContent = 'An error occurred: ' + error;
+    });
+});

@@ -86,3 +86,72 @@ button[type="submit"]:hover {
 #uploadForm button {
     margin-bottom: 10px;
 }
+
+/* Navigation Buttons */
+.nav-buttons {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.nav-buttons button {
+    background-color: #7289da; /* Discord button color */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 5px; /* Space between buttons */
+}
+
+.nav-buttons button:hover {
+    background-color: #677bc4; /* Lighter shade on hover */
+}
+
+/* Upload Form */
+#upload-form {
+    background-color: #40444b; /* Slightly lighter than main background */
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+#upload-form label, #upload-form input, #upload-form button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%; /* Adjust width as needed */
+}
+
+#upload-form label {
+    color: #dcddde;
+    margin-bottom: 5px;
+}
+
+#upload-form input[type="text"], #upload-form input[type="file"] {
+    background-color: #36393f;
+    border: 1px solid #202225;
+    color: #dcddde;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+#upload-form button[type="submit"] {
+    background-color: #7289da;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#upload-form button[type="submit"]:hover {
+    background-color: #677bc4;
+}
+
+#upload-status {
+    margin-top: 10px;
+    color: #dcddde;
+}
