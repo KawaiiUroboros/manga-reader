@@ -52,6 +52,9 @@ func main() {
 	// Serve static files from the "static" directory
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
+	// Serve the index.html file from the "static" directory
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
