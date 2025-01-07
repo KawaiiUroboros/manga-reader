@@ -361,3 +361,44 @@ main {
 .options:hover, .capture:hover {
     background-color: #677bc4; /* Lighter shade on hover */
 }
+
+/* Progress Bar */
+#upload-progress {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#upload-percentage {
+    display: block;
+    text-align: center;
+}
+
+/* Manga Controls */
+.manga-controls {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.manga-controls button {
+    background-color: #7289da;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 5px;
+}
+
+.manga-controls button:hover {
+    background-color: #677bc4;
+}
+
+.placeholder-options {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px; /* Spacing between buttons */
+}
