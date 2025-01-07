@@ -167,3 +167,14 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
         document.getElementById('upload-status').textContent = 'An error occurred: ' + error;
     });
 });
+
+// Event listeners for the new buttons ("Options" and "Capture")
+document.querySelector('.options').addEventListener('click', () => {
+    // Implement the action for the "Options" button
+    alert('Options button clicked');
+});
+
+document.querySelector('.capture').addEventListener('click', () => {
+    // Implement the action for the "Capture" button
+    alert('Capture button clicked');
+});
