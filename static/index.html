@@ -43,7 +43,12 @@
                 <p>There are no manga available yet. Please upload a manga using the "Upload" tab.</p>
             </div>
             <div id="manga-viewer" style="display: none;">
-                <p>Select a manga and chapter to start reading.</p>
+                <ul id="manga-list"></ul>
+                <h3>Chapter List</h3>
+                <ul id="chapter-list"></ul>
+                <div id="manga-content">
+                    <p>Select a manga and chapter to start reading.</p>
+                </div>
             </div>
             <div class="manga-controls" style="display: none;">
                 <button id="prev-page">Previous</button>
@@ -63,7 +68,10 @@
 
                     <button type="submit">Upload</button>
                 </form>
-                <div id="upload-status"></div>
+                <div id="upload-status">
+                    <progress id="upload-progress" value="0" max="100"></progress>
+                    <span id="upload-percentage">0%</span>
+                </div>
             </div>
         </main>
         <div class="right-sidebar">

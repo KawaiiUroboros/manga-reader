@@ -148,33 +148,39 @@ document.getElementById('next-page').addEventListener('click', () => {
     }
 });
 
-// Form submission
+// Form submission with progress bar update
 document.getElementById('uploadForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const formData = new FormData(this);
+    const xhr = new XMLHttpRequest();
 
-    fetch('/upload', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('upload-status').textContent = data;
-        fetchAndDisplayMangaList(); // Refresh manga list after upload
-    })
-    .catch(error => {
-        document.getElementById('upload-status').textContent = 'An error occurred: ' + error;
+    xhr.open('POST', '/upload');
+
+    // Update progress bar
+    xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) {
+            const percentage = Math.round((event.loaded / event.total) * 100);
+            document.getElementById('upload-progress').value = percentage;
+            document.getElementById('upload-percentage').textContent = `${percentage}%`;
+        }
     });
-});
 
-// Event listeners for the new buttons ("Options" and "Capture")
-document.querySelector('.options').addEventListener('click', () => {
-    // Implement the action for the "Options" button
-    alert('Options button clicked');
-});
+    // Handle server response
+    xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+            document.getElementById('upload-status').textContent = xhr.responseText;
+            fetchAndDisplayMangaList(); // Refresh manga list
+        } else {
+            document.getElementById('upload-status').textContent = 'An error occurred: ' + xhr.statusText;
+        }
+    });
 
-document.querySelector('.capture').addEventListener('click', () => {
-    // Implement the action for the "Capture" button
-    alert('Capture button clicked');
+    // Handle error
+    xhr.addEventListener('error', () => {
+        document.getElementById('upload-status').textContent = 'An error occurred during the upload.';
+    });
+
+    // Send the request
+    xhr.send(formData);
 });
