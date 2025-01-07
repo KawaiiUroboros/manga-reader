@@ -8,6 +8,7 @@ body {
     margin: 0;
     background-color: #36393f;
     color: #dcddde;
+    min-height: 100vh;
 }
 
 h1 {
@@ -154,4 +155,209 @@ button[type="submit"]:hover {
 #upload-status {
     margin-top: 10px;
     color: #dcddde;
+}
+
+/* Header */
+header {
+    background-color: #202225; /* Darker header */
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space out elements */
+    position: relative; /* For absolute positioning of search bar */
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 24px;
+    color: #fff;
+    margin-right: 30px; /* Add margin to the right of the logo */
+}
+
+.search {
+    position: absolute; /* Position search bar relative to header */
+    left: 50%;
+    transform: translateX(-50%); /* Center the search bar */
+    width: 40%; /* Adjust width as needed */
+}
+
+.search input {
+    background-color: #2f3136;
+    border: none;
+    color: #dcddde;
+    padding: 8px 12px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+nav li {
+    margin-left: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #dcddde;
+    font-size: 16px;
+}
+
+.user-profile, .notifications {
+    cursor: pointer;
+}
+
+.user-profile img, .notifications img {
+    width: 30px; /* Adjust size as needed */
+    height: 30px;
+    border-radius: 50%; /* For profile image */
+}
+
+/* Container */
+.container {
+    display: flex;
+    flex-grow: 1; /* Allow container to fill available space */
+}
+
+/* Sidebars */
+.left-sidebar, .right-sidebar {
+    background-color: #2f3136;
+    width: 72px; /* Narrow sidebar, adjust as needed */
+    padding: 20px 0; /* Reduce horizontal padding */
+    overflow-y: auto;
+    position: sticky; /* Fixed position */
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column; /* Vertical alignment */
+    align-items: center; /* Center icons horizontally */
+}
+
+.left-sidebar ul{
+    padding-inline-start: 0px;
+}
+
+.right-sidebar {
+    position: sticky;
+    bottom: 0;
+    width: 240px;
+}
+
+.left-sidebar li {
+    margin: 15px 0; /* Add margin between list items */
+    list-style-type: none;
+}
+
+/* Main Content */
+main {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #36393f; /* Light gray background */
+}
+
+/* Sections */
+.wall, .featured-manga, .new-release, .recommendations, .welcome {
+    margin-bottom: 30px;
+    background-color: #fff; /* White background for contrast */
+    color: #202225; /* Dark text for readability on white */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+.wall .review-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.wall .review-section input {
+    background-color: #40444b;
+    border: none;
+    color: #dcddde;
+    padding: 8px 12px;
+    border-radius: 18px; /* Rounded input field */
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.wall .review-section button {
+    background-color: #7289da;
+    border: none;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.calendar-section {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.calendar-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendar-section th,
+.calendar-section td {
+    text-align: center;
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.calendar-section .calendar-header {
+    font-weight: bold;
+    background-color: #f0f0f0;
+}
+
+/* LOVE Section */
+.love-section {
+    background-color: #202225; /* Dark background */
+    color: #dcddde;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.love-section .heart {
+    color: #ff69b4; /* Pink heart color */
+    font-size: 24px;
+    margin: 0 5px;
+}
+
+/* Options and Capture Buttons */
+.bottom-buttons {
+    margin-top: auto; /* Push buttons to the bottom */
+    display: flex;
+    flex-direction: column; /* Vertical alignment */
+    align-items: center; /* Center buttons horizontally */
+    width: 100%;
+}
+
+.options, .capture {
+    background-color: #7289da; /* Discord button color */
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 50%; /* Circular buttons */
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px 0; /* Space between buttons */
+    width: 40px; /* Fixed width */
+    height: 40px; /* Fixed height */
+    display: flex; /* Center icon inside button */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+}
+
+.options:hover, .capture:hover {
+    background-color: #677bc4; /* Lighter shade on hover */
 }

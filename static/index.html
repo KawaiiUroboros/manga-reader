@@ -5,47 +5,74 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="sidebar">
-        <h3>Manga List</h3>
-        <ul id="manga-list"></ul>
-        <h3>Chapter List</h3>
-        <ul id="chapter-list"></ul>
+    <header>
+        <div class="logo">Manga Reader</div>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Popular</a></li>
+                <li><a href="#">New Releases</a></li>
+                <li><a href="#">Categories</a></li>
+            </ul>
+        </nav>
+        <div class="search">
+            <input type="text" placeholder="Search...">
+        </div>
+        <div class="user-profile">
+            <img src="profile.jpg" alt="User Profile">
+        </div>
+        <div class="notifications">
+            <img src="notifications.jpg" alt="Notifications">
+        </div>
+    </header>
+    <div class="container">
+        <div class="left-sidebar">
+            <ul>
+                <li><a href="#">Icon 1</a></li>
+                <li><a href="#">Icon 2</a></li>
+                <li><a href="#">Icon 3</a></li>
+            </ul>
+        </div>
+        <main>
+            <div class="nav-buttons">
+                <button id="view-button">View</button>
+                <button id="upload-button">Upload</button>
+            </div>
+            <div id="initial-content">
+                <h1>Welcome to the Manga Uploader!</h1>
+                <p>There are no manga available yet. Please upload a manga using the "Upload" tab.</p>
+            </div>
+            <div id="manga-viewer" style="display: none;">
+                <p>Select a manga and chapter to start reading.</p>
+            </div>
+            <div class="manga-controls" style="display: none;">
+                <button id="prev-page">Previous</button>
+                <button id="next-page">Next</button>
+            </div>
+            <div id="upload-form" style="display: none;">
+                <h3>Upload Manga</h3>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <label for="manga">Manga Title:</label><br>
+                    <input type="text" id="manga" name="manga" required><br><br>
+
+                    <label for="chapter">Chapter Number:</label><br>
+                    <input type="text" id="chapter" name="chapter" required><br><br>
+
+                    <label for="file">Choose a chapter file (zip):</label><br>
+                    <input type="file" id="file" name="file" accept=".zip" required><br><br>
+
+                    <button type="submit">Upload</button>
+                </form>
+                <div id="upload-status"></div>
+            </div>
+        </main>
+        <div class="right-sidebar">
+            <div class="bottom-buttons">
+                <button class="options">Options</button>
+                <button class="capture">Capture</button>
+            </div>
+        </div>
     </div>
-
-    <div class="main-content">
-        <div class="nav-buttons">
-            <button id="view-button">View</button>
-            <button id="upload-button">Upload</button>
-        </div>
-        <div id="initial-content">
-            <h1>Welcome to the Manga Uploader!</h1>
-            <p>There are no manga available yet. Please upload a manga using the "Upload" tab.</p>
-        </div>
-        <div id="manga-viewer" style="display: none;">
-            <p>Select a manga and chapter to start reading.</p>
-        </div>
-        <div class="manga-controls" style="display: none;">
-            <button id="prev-page">Previous</button>
-            <button id="next-page">Next</button>
-        </div>
-        <div id="upload-form" style="display: none;">
-            <h3>Upload Manga</h3>
-            <form id="uploadForm" enctype="multipart/form-data">
-                <label for="manga">Manga Title:</label><br>
-                <input type="text" id="manga" name="manga" required><br><br>
-
-                <label for="chapter">Chapter Number:</label><br>
-                <input type="text" id="chapter" name="chapter" required><br><br>
-
-                <label for="file">Choose a chapter file (zip):</label><br>
-                <input type="file" id="file" name="file" accept=".zip" required><br><br>
-
-                <button type="submit">Upload</button>
-            </form>
-            <div id="upload-status"></div>
-        </div>
-    </div>
-
     <script src="/static/js/script.js"></script>
 </body>
 </html>
